@@ -1,160 +1,234 @@
 ---
 name: explain
-description: Use whenever the user asks to explain, walk through, or help them understand anything (code, a flow, a bug, a concept, an architecture, a model output). Picks the clearest output format and writes in simplified technical English.
+description: Use when a user needs a clear explanation of code, systems, bugs, concepts, architecture, or model behavior. Choose the smallest useful presentation and build from concrete evidence.
 ---
 
 # Explain
 
-Goal: the user understands fast. Pick the lightest format that works, then escalate only when it helps.
+Make the explanation easy to follow, technically accurate, and useful for the user's next action.
 
-## Format ladder
+## Core method
 
-1. **Text** — default. Write in ~80% ASD-STE100 (see rules below).
-2. **Diagram** — when the answer is a flow, structure, sequence, or relationship. Follow the Diagram style below. In the terminal use plain ASCII boxes and arrows; for a richer one, publish via the Artifact tool (`artifact-diagramming` skill).
-3. **HTML page** — a one-page reference sheet (see below) when the topic is large, has many parts, or benefits from interaction (tabs, step-through, annotated code). Publish with the Artifact tool (`artifact-design` skill).
-4. **Explainer video** — only if the user asks. Use the `faceless-explainer` skill.
+Use this order:
 
-Short question → text. "How does X flow / fit together" → diagram. "Explain the whole X" → HTML page. Do not escalate to a bigger format unasked for a small question.
+1. **Answer** — State the main point in one or two sentences.
+2. **Evidence** — For code, inspect the relevant files before explaining behavior.
+3. **Mechanism** — Show the important steps in the order they happen.
+4. **Example** — Use a concrete input, action, or request and show the resulting behavior.
+5. **Next step** — Point to the next file, command, or concept only when it helps.
 
-## Reference sheet (HTML explainer style)
+Do not add detail just to make the answer longer.
 
-For "explain the whole X" or any spec, overview, or system with many parts. One page, lettered panels, like an engineering drawing sheet.
+## Choose the presentation
 
-- **Frame:** thin outer border with grid references (columns 1-8, rows A-D) on the edges. White page, dark text.
-- **Panels:** bordered cards in a grid. Each has a dark letter chip (A, B, C), a bold title, and a small mono caption on the right (e.g. "annotated examples").
-- **Panel types, pick what fits:**
-  - Structure: a tree of the parts.
-  - Anatomy: one real example with brackets and short labels under each part.
-  - Table: rows with a status column, check (blue) for right, cross (red) for wrong.
-  - Limits: horizontal bars with a max marker.
-  - History: a timeline with 3-4 dots.
-- **Color:** one meaning each. Red = wrong or not allowed. Blue = approved, or an annotation. Grey = secondary text. Nothing else.
-- **Type:** mono for examples, code, captions, and numbers. Clean sans for titles and body.
-- **Title block** (bottom-right): title, source, owner, sheet "1 of 1".
-- **Content:** every panel shows a real example, never only a definition. Wrong next to right, side by side.
-- Build with the Artifact tool and the `artifact-design` skill. Works in light and dark mode. Must fit a phone width by stacking panels.
+Start with the simplest format that can explain the subject well.
 
-Use the Excalidraw style below for flows and paths. Use the sheet style for specs and overviews. Do not mix them on one page.
+### Text
 
-## Diagram style (Excalidraw look)
+Use text for:
 
-Minimal, hand-drawn, calm. Looks like a whiteboard sketch, not a corporate slide.
+- A single concept
+- One bug or error
+- A short code path
+- A direct "why" question
 
-- **Shapes:** rounded rectangles, plain arrows, a few ellipses. No shadows, gradients, icons, or 3D.
-- **Lines:** hand-drawn feel. Slight wobble, 2px stroke, round caps. In SVG use an `feTurbulence` + `feDisplacementMap` filter (scale ~1.5); in HTML use `roughjs` from cdnjs.
-- **Colors:** black strokes on white (dark mode: light strokes on near-black). One accent color at most, plus soft pastel fills for grouping.
-- **Text:** hand-style font (`Caveat` or `Kalam` from Google Fonts), 2-4 words per label. Never a sentence in a box.
-- **Layout:** left to right or top to bottom, generous spacing, one arrow per relationship, no crossing lines. Max ~8 boxes; split the diagram if you need more.
-- **Arrows:** label only when the verb is not obvious ("sends token", "401").
-- **Output:** inline SVG in an Artifact for rich diagrams. For editable output, write an `.excalidraw` JSON file the user can open at excalidraw.com.
+Prefer short paragraphs and lists.
 
-Terminal fallback:
+### Flow diagram
+
+Use a diagram when the user needs to understand:
+
+- Request flow
+- Component relationships
+- State changes
+- Data movement
+- A sequence of operations
+
+Use simple boxes and arrows.
+
+Example:
 
 ```
- [Browser] --token--> [app-studio] --> [optics] --> [Device]
+[User action]
+      |
+      v
+[UI handler]
+      |
+      v
+[API request]
+      |
+      v
+[Server]
 ```
 
-## Writing rules (ASD-STE100, relaxed)
+Keep diagrams small. Split a large system into separate flows.
 
-Limits:
+### Reference page
 
-| Item | Max |
-| ---- | --- |
-| Procedural sentence | 20 words |
-| Descriptive sentence | 25 words |
-| Paragraph | 6 sentences, one topic |
-| Noun cluster | 3 words |
-| Instructions per sentence | 1 (except simultaneous actions) |
+Use a structured reference when the subject has many connected parts, such as:
 
-Verbs:
+- A complete feature
+- A framework subsystem
+- A large architecture
+- A specification
 
-| Form | Example | OK |
-| ---- | ------- | --- |
-| Command | Close the valve. | yes |
-| Simple present / past / future | The valve closes. | yes |
-| Infinitive | Turn the knob to close it. | yes |
-| Past participle as adjective | The closed valve | yes |
-| Progressive (-ing) | The valve is closing. | no |
-| Perfect | The valve has closed. | no |
-| Passive in procedures | The valve must be closed. | no |
+Organize it into clear sections. Include real examples instead of definitions alone.
 
-Words:
+### Video
 
-- Same word for the same thing, every time. No synonyms for variety.
-- Keep "the", "a", "this". Do not drop articles.
-- Short common words: use not utilize, start not commence, before not prior to, about not approximately, fill not replenish, make sure not ensure, to not in order to.
-- Active voice. Simple present tense. Use vertical lists for complex text.
+Only create or recommend a video format when the user asks for one.
 
-Safety: put the command first, then the reason. `WARNING` = risk of injury. `CAUTION` = risk of damage.
+## Code explanation rules
 
-Example: "WARNING: Do not touch the brake unit until it is cool. Hot parts can cause injury."
+When explaining code:
 
-Rewrite check (same meaning, 12 words instead of 16):
-- Before: "It is imperative that the operator ensures the hydraulic reservoir is replenished prior to commencing operation."
-- After: "Make sure the hydraulic reservoir is full before you start the operation."
+- Read the relevant source first.
+- Use exact file paths and line numbers when available.
+- Explain the actual execution path, not a guessed implementation.
+- Separate what the code does from what the code could do.
+- Show a small real example before introducing abstractions.
+- Mention assumptions when the repository does not provide enough evidence.
 
-## Structure
-
-1. One-line answer first.
-2. Then the mechanism: what calls what, with `file:line` references for code.
-3. A concrete example (real input → real output) before any abstraction.
-4. End with what to look at next, only if useful.
-
-Ground code explanations in the actual repo. Read the files first. Do not explain from memory.
-
-## Simple mode (explain like I'm 13)
-
-Use when the user says "like I'm 13", "ELI13", "dumb it down", "I don't get it", or similar. This replaces the technical register; the format ladder still applies.
-
-- Start with one everyday analogy (a restaurant, a post office, a school). Keep the same analogy to the end.
-- No jargon. If a technical word is needed, say it once, then explain it in plain words.
-- Short sentences. One idea each.
-- Build up: what it is, why it exists, how it works, one small example.
-- Never talk down to the user. Simple means clear, not childish.
-- End with a one-line recap.
-
-## Examples
-
-### Bad vs good (technical mode)
-
-Question: "What does the API client do?"
-
-- Bad: "The client leverages an interceptor pattern to facilitate the approximately seamless attachment of authentication credentials prior to dispatching requests."
-- Good: "The client adds your login token to every request. If the server says 401, it signs you out. It also merges identical GET requests into one."
-
-Why: one idea per sentence, plain words, no stacked nouns.
-
-### Simple mode
-
-Question: "Explain Redux like I'm 13."
-
-> Think of a school office. Every student (component) needs to know today's schedule. Instead of each student keeping their own copy, the office keeps one board (the store). A student who wants a change fills in a form (an action). The office clerk (the reducer) updates the board. Everyone looks at the same board, so nobody has old info.
->
-> Recap: one shared board, changed only through forms.
-
-### Pick the format
-
-| Question | Format | Why |
-| -------- | ------ | --- |
-| "Why does this hook re-render?" | Text | One cause, one fix |
-| "How does a request reach the device?" | Diagram: `Browser → app-studio → optics → device` | It is a path with steps |
-| "Explain the whole reports feature" | HTML reference sheet | Many parts: list, summary, drill-down |
-| "Make a video on how login works" | Explainer video | You asked for one |
-
-### Answer shape
+For a bug, use this shape:
 
 ```
-Answer: Login sends you to the SSO portal, which returns a token in the URL.
-How: ProtectedRoute checks the token (src/containers/ProtectedRoute.tsx:12) → AuthContext stores it → client.js sends it with each request.
-Example: open /modules while signed out → redirect to SSO → sign in → back at /modules with ?token=… → URL is cleaned.
-Next: read src/utils/ssoHandoff.js for the trust check.
+Cause → Where it happens → Why it happens → Fix → How to verify
 ```
 
----
+Do not claim a root cause until the available code or error evidence supports it.
 
-## Attribution
+## Technical writing style
 
-This skill is based on the `explain` skill from the public repository:
-https://github.com/ARYANK-08/agentic-dev-kit
+Write in plain technical English.
 
-Adapted into the `akhilbharati244/Agent-skills` collection on October 2, 2026.
+Prefer:
+
+- "use" instead of "utilize"
+- "start" instead of "commence"
+- "before" instead of "prior to"
+- "about" instead of "approximately"
+- "show" instead of "demonstrate" when the meaning is the same
+
+Keep one main idea per sentence.
+
+Use the same term for the same concept. Do not switch between synonyms only for style.
+
+Prefer active voice:
+
+- "The client sends the token."
+- Not: "The token is sent by the client."
+
+For instructions, put the action first:
+
+- "Open the file."
+- "Run the test."
+- "Check the network request."
+
+For warnings:
+
+```
+WARNING: Do not run this command in production.
+It can delete existing data.
+```
+
+## Simple explanation mode
+
+Use this mode when the user asks for an explanation "like I'm 13", "ELI13", "in simple words", or says they do not understand.
+
+Use one familiar analogy and keep it consistent.
+
+Build the explanation in this order:
+
+1. What it is
+2. Why it exists
+3. How it works
+4. A small example
+5. One-line recap
+
+Avoid unnecessary jargon. If a technical term is required, define it the first time.
+
+Simple does not mean childish.
+
+## Diagrams
+
+For diagrams:
+
+- Keep labels short.
+- Use one direction: left-to-right or top-to-bottom.
+- Avoid crossing arrows.
+- Use one arrow for one relationship.
+- Use at most a few visual groups.
+- Split complex systems into multiple diagrams.
+
+Prefer plain ASCII when the user is in a terminal or text-only context.
+
+For richer output, use an appropriate diagram or artifact capability when available.
+
+## Common answer patterns
+
+### Concept
+
+```
+Short answer: <main idea>
+
+Why it exists:
+- <reason>
+
+How it works:
+1. <step>
+2. <step>
+3. <step>
+
+Example:
+<small concrete example>
+
+Recap:
+<one sentence>
+```
+
+### Code flow
+
+```
+Short answer: <what the code does>
+
+Flow:
+A → B → C → D
+
+Key code:
+- <file>:<line> — <role>
+- <file>:<line> — <role>
+
+Example:
+<input> → <operation> → <output>
+```
+
+### Bug
+
+```
+Root cause: <supported cause>
+
+What happens:
+1. <step>
+2. <step>
+3. <failure>
+
+Fix:
+<change>
+
+Verify:
+<test or command>
+```
+
+## Quality check
+
+Before finishing, verify:
+
+- Did I answer the user's actual question first?
+- Did I use repository evidence for code questions?
+- Is every technical claim supported by the available evidence?
+- Could I remove a paragraph without losing understanding?
+- Did I give a concrete example?
+- Did I avoid unnecessary jargon?
+- Is the next step useful rather than automatic?
+
+The goal is not to explain everything. The goal is to make the user understand the part that matters.
